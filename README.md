@@ -59,7 +59,7 @@ Python BackUp is a Python-based backup utility that allows users to schedule and
     interval_entry.grid(row=2, column=1, padx=10, pady=5)
     ```
 
-- **Time (HH:MM)**: 
+- **Time (HH:MM) is in 24 hour format, **: 
     ```python
     tk.Label(root, text="Time (HH:MM):").grid(row=3, column=0, padx=10, pady=5)
     time_entry = tk.Entry(root, width=50)
