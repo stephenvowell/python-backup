@@ -1,6 +1,6 @@
-# JoeBackUp
+# Python BackUp
 
-JoeBackUp is a Python-based backup utility that allows users to schedule and manage backups of their files and directories. The application uses a simple graphical user interface (GUI) built with Tkinter.
+Python BackUp is a Python-based backup utility that allows users to schedule and manage backups of their files and directories. The application uses a simple graphical user interface (GUI) built with Tkinter.
 
 
 ******* The backupv1.py file has the directions to install the required librarys
