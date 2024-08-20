@@ -115,7 +115,7 @@ def on_start():
 
 # Create the main window
 root = tk.Tk()
-root.title("Backup Scheduler for Joe")
+root.title("Backup Scheduler for Python V2")
 
 # Source folder
 tk.Label(root, text="Source Folder:").grid(row=0, column=0, padx=10, pady=5)
