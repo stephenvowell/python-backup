@@ -4,6 +4,7 @@ Python BackUp is a Python-based backup utility that allows users to schedule and
 
 
 ******* The backupv1.py file has the directions to install the required librarys
+        the backup_v2 will output the log files to a CSV file
 
 ## Features
 
