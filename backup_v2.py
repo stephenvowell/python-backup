@@ -113,6 +113,25 @@ def on_start():
     print(f"Starting backup process: src={src}, dst={dst}, interval={interval}, time_str={time_str}")
     threading.Thread(target=start_backup, args=(src, dst, interval, time_str), daemon=True).start()
 
+def on_backup_now():
+    src = src_entry.get().strip()
+    dst = dst_entry.get().strip()
+    if not src or not dst:
+        messagebox.showerror("Error", "Source and destination folders are required")
+        return
+    if not os.path.isdir(src):
+        messagebox.showerror("Error", "Source folder does not exist or is not a folder")
+        return
+
+    def task():
+        try:
+            copy_folder(src, dst)
+            root.after(0, lambda: messagebox.showinfo("Backup", "Backup finished. See logs for any per-file errors."))
+        except Exception as e:
+            root.after(0, lambda err=str(e): messagebox.showerror("Error", f"Backup failed: {err}"))
+
+    threading.Thread(target=task, daemon=True).start()
+
 # Create the main window
 root = tk.Tk()
 root.title("Backup Scheduler for Python V2")
@@ -139,7 +158,16 @@ tk.Label(root, text="Time (HH:MM):").grid(row=3, column=0, padx=10, pady=5)
 time_entry = tk.Entry(root, width=50)
 time_entry.grid(row=3, column=1, padx=10, pady=5)
 
-# Start button
-tk.Button(root, text="Start Backup", command=on_start).grid(row=4, column=1, pady=20)
+# Backup now + scheduled start
+btn_row = tk.Frame(root)
+btn_row.grid(row=4, column=1, pady=20)
+tk.Button(btn_row, text="Backup Now", command=on_backup_now).pack(side=tk.LEFT, padx=5)
+tk.Button(btn_row, text="Start Backup", command=on_start).pack(side=tk.LEFT, padx=5)
+
+# Bring window forward (often hidden behind the IDE when launched from a terminal)
+root.update_idletasks()
+root.lift()
+root.attributes("-topmost", True)
+root.after(200, lambda: root.attributes("-topmost", False))
 
 root.mainloop()
