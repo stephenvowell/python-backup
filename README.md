@@ -1,88 +1,67 @@
 # Python BackUp
 
-Python BackUp is a Python-based backup utility that allows users to schedule and manage backups of their files and directories. The application uses a simple graphical user interface (GUI) built with Tkinter.
-
-
-******* The backupv1.py file has the directions to install the required librarys
-        the backup_v2 will output the log files to a CSV file
+Python BackUp is a small backup utility with a Tkinter GUI. You can run a **one-off backup** or **schedule** recurring copies of a folder to a destination. **`backup_v2.py`** is the recommended version: it logs copy results to CSV files under `logs/`. **`backupv1.py`** is an older variant without those CSV logs.
 
 ## Features
 
-- **Browse and Select Folders**: Easily browse and select source and destination folders for backup.
-- **Schedule Backups**: Set the interval (in days) and time (HH:MM) for automated backups.
-- **Start Backup**: Initiate the backup process with a single click.
+- **Browse folders**: Pick source and destination directories.
+- **Backup Now**: Copy immediately using only source and destination (no schedule required).
+- **Schedule backups**: Set interval (days) and **24-hour** time `HH:MM` (e.g. `09:00`, `14:30`), then **Start Backup** to run on that schedule.
+- **CSV logs** (`backup_v2.py`): `logs/copy_success.csv` and `logs/copy_errors.csv`.
 
 ## Requirements
 
 - Python 3.x
-- Tkinter (usually included with Python)
-- Schedule library
+- Tkinter (usually included with Windows/macOS Python from [python.org](https://www.python.org/))
+- [`schedule`](https://pypi.org/project/schedule/)
 
 ## Installation
 
 1. Clone the repository:
-    ```sh
-    git clone https://github.com/yourusername/JoeBackUp.git
-    cd JoeBackUp
-    ```
 
-2. Install the required libraries:
-    ```sh
-    pip install schedule
-    ```
+   ```sh
+   git clone https://github.com/stephenvowell/PythonBackUp.git
+   cd PythonBackUp
+   ```
+
+2. Install dependencies:
+
+   ```sh
+   pip install -r requirements.txt
+   ```
 
 ## Usage
 
-1. Run the `backupv1.py` script:
-    ```sh
-    python backupv1.py
-    ```
+From the project directory, run the version you want:
 
-2. Use the GUI to:
-    - Browse and select the source and destination folders.
-    - Set the interval (in days) and time (HH:MM) for the backup.
-    - Click the "Start Backup" button to begin the backup process.
+**Recommended (CSV logs, Backup Now):**
 
-## Code Overview
+```sh
+python backup_v2.py
+```
 
-### GUI Elements
+**Older GUI (no CSV logs):**
 
-- **Destination Folder**: 
-    ```python
-    dst_entry.grid(row=1, column=1, padx=10, pady=5)
-    tk.Button(root, text="Browse", command=lambda: browse_folder(dst_entry)).grid(row=1, column=2, padx=10, pady=5)
-    ```
+```sh
+python backupv1.py
+```
 
-- **Interval (days)**: 
-    ```python
-    tk.Label(root, text="Interval (days):").grid(row=2, column=0, padx=10, pady=5)
-    interval_entry = tk.Entry(root, width=50)
-    interval_entry.grid(row=2, column=1, padx=10, pady=5)
-    ```
+### In the GUI
 
-- **Time (HH:MM) is in 24 hour format, **: 
-    ```python
-    tk.Label(root, text="Time (HH:MM):").grid(row=3, column=0, padx=10, pady=5)
-    time_entry = tk.Entry(root, width=50)
-    time_entry.grid(row=3, column=1, padx=10, pady=5)
-    ```
+1. Choose **Source** and **Destination** folders (Browse or type paths).
+2. Optional — **Backup Now** to copy once right away.
+3. For scheduling, fill **Interval (days)** and **Time (24-hour HH:MM)**, then **Start Backup**. The scheduled job runs at that clock time; use **Backup Now** if you also need an immediate copy.
 
-- **Start Button**: 
-    ```python
-    tk.Button(root, text="Start Backup", command=on_start).grid(row=4, column=1, pady=20)
-    ```
+On Windows PowerShell 5.x, chain commands with `;` instead of `&&`, for example:
 
-### Main Loop
-
-- **Main Loop**: 
-    ```python
-    root.mainloop()
-    ```
+```powershell
+Set-Location C:\path\to\PythonBackUp; python backup_v2.py
+```
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request.
+Contributions are welcome. Fork the repository and open a pull request.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
