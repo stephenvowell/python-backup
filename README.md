@@ -1,6 +1,6 @@
 # Python BackUp
 
-Python BackUp is a small backup utility with a Tkinter GUI. You can run a **one-off backup** or **schedule** recurring copies of a folder to a destination. **`backup_v2.py`** is the recommended version: it logs copy results to CSV files under `logs/`. **`backupv1.py`** is an older variant without those CSV logs.
+Python BackUp is a small backup utility with a Tkinter GUI. You can run a **one-off backup** or **schedule** recurring copies of a folder to a destination. **`backup_v2.py`** is the recommended version: it logs copy results to CSV files under `logs/`. **`backup.py`** is an older scheduler-only GUI with plain `.log` files instead of CSV.
 
 ## Features
 
@@ -40,10 +40,10 @@ From the project directory, run the version you want:
 python backup_v2.py
 ```
 
-**Older GUI (no CSV logs):**
+**Older GUI (scheduler only, `.log` files):**
 
 ```sh
-python backupv1.py
+python backup.py
 ```
 
 ### In the GUI
