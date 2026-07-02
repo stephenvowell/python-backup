@@ -1,116 +1,67 @@
-import shutil
 import os
-import filecmp
-import logging
-import schedule
 import time
+import json
+import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
-import threading
-import re
-import csv
-import json
 
-# Ensure the logs directory exists
-log_dir = 'logs'
-if not os.path.exists(log_dir):
-    os.makedirs(log_dir)
-# Configure logging to use the new location
-log_file = os.path.join(log_dir, 'copy_errors.csv')
-logging.basicConfig(filename=log_file, level=logging.ERROR,
-                    format='%(asctime)s,%(levelname)s,%(message)s', filemode='w')
-# Configure a separate logger for successful copies
-success_log_file = os.path.join(log_dir, 'copy_success.csv')
-success_logger = logging.getLogger('success_logger')
-success_handler = logging.FileHandler(success_log_file, mode='w')
-success_handler.setLevel(logging.INFO)
-success_formatter = logging.Formatter('%(asctime)s,%(message)s')
-success_handler.setFormatter(success_formatter)
-success_logger.addHandler(success_handler)
-success_logger.setLevel(logging.INFO)
-# Write headers to the CSV files
-with open(log_file, 'w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerow(['Timestamp', 'Level', 'Message'])
-with open(success_log_file, 'w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerow(['Timestamp', 'Message'])
+import schedule
+
+from backup_core import copy_folder, validate_time_format, log_error, LOG_DIR
+
+os.makedirs(LOG_DIR, exist_ok=True)
+
 copy_lock = threading.Lock()
+# Signals the running manual/scheduled copy to stop early.
+cancel_event = threading.Event()
+# Signals the scheduler loop to exit.
+stop_event = threading.Event()
 
 _STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gui_state.json")
 
 
-def copy_folder(src, dst, progress_cb=None):
-    """Copy tree from src to dst. Optional progress_cb(done, total) after each file (worker thread)."""
-    print(f"Starting copy from {src} to {dst}")
-    if not os.path.exists(dst):
-        os.makedirs(dst)
-    total = sum(len(files) for _, _, files in os.walk(src))
-    done = 0
-    errors = 0
-    copied = 0
-    unchanged = 0
-    def report():
-        if progress_cb:
-            progress_cb(done, total)
-    for dirpath, _dirs, files in os.walk(src):
-        for file in files:
-            src_file = os.path.join(dirpath, file)
-            dst_file = os.path.join(dst, os.path.relpath(src_file, src))
-            try:
-                if not os.path.exists(os.path.dirname(dst_file)):
-                    os.makedirs(os.path.dirname(dst_file))
-                if not os.path.exists(dst_file) or not filecmp.cmp(src_file, dst_file, shallow=False):
-                    shutil.copy2(src_file, dst_file)
-                    print(f"Copied {src_file} to {dst_file}")
-                    success_logger.info(f"Copied {src_file} to {dst_file}")
-                    copied += 1
-                else:
-                    unchanged += 1
-            except Exception as e:
-                errors += 1
-                logging.error(f"Failed to copy {src_file} to {dst_file}: {e}")
-                print(f"Error copying {src_file} to {dst_file}: {e}")
-            done += 1
-            report()
-    if total == 0 and progress_cb:
-        progress_cb(0, 0)
-    return {"errors": errors, "copied": copied, "unchanged": unchanged, "total": total}
 def start_backup(src, dst, interval, time_str):
     def job():
         print("Job started")
+        cancel_event.clear()
         ready = threading.Event()
+
         def ping_ui():
             set_status("Running scheduled backup…", "blue")
             progress_bar.configure(maximum=100)
             progress_var.set(0)
             ready.set()
+
         root.after(0, ping_ui)
         if not ready.wait(timeout=30):
-            logging.error("Scheduled backup: UI did not respond in time")
+            log_error("Scheduled backup: UI did not respond in time")
             print("Scheduled backup: UI ping timed out")
             return
+
         def progress_cb(done, total):
             root.after(0, lambda d=done, t=total: apply_progress(d, t))
+
         try:
             with copy_lock:
-                stats = copy_folder(src, dst, progress_cb=progress_cb)
+                stats = copy_folder(src, dst, progress_cb=progress_cb, cancel_event=cancel_event)
             root.after(0, lambda s=stats: finish_backup_ui(s, None, scheduled=True))
         except Exception as e:
             root.after(0, lambda err=str(e): finish_backup_ui(None, err, scheduled=True))
         print("Job completed")
+
     print(f"Scheduling job at {time_str}")
     if not validate_time_format(time_str):
-        logging.error(f"Invalid time format: {time_str}")
+        log_error(f"Invalid time format: {time_str}")
         print(f"Invalid time format: {time_str}")
         return
     schedule.every(interval).days.at(time_str).do(job)
-    while True:
+    while not stop_event.is_set():
         schedule.run_pending()
         time.sleep(1)
-def validate_time_format(time_str):
-    pattern = re.compile(r'^\d{2}:\d{2}$')
-    return pattern.match(time_str) is not None
+    schedule.clear()
+    print("Scheduler stopped")
+
+
 root = tk.Tk()
 root.title("Backup Scheduler for Python V2")
 # Source folder
@@ -142,8 +93,10 @@ btn_row = tk.Frame(root)
 btn_row.grid(row=6, column=1, pady=12)
 backup_now_btn = tk.Button(btn_row, text="Backup Now")
 start_backup_btn = tk.Button(btn_row, text="Start Backup")
+stop_btn = tk.Button(btn_row, text="Stop")
 backup_now_btn.pack(side=tk.LEFT, padx=5)
 start_backup_btn.pack(side=tk.LEFT, padx=5)
+stop_btn.pack(side=tk.LEFT, padx=5)
 root.columnconfigure(1, weight=1)
 
 
@@ -200,14 +153,20 @@ def apply_progress(done, total):
     else:
         progress_bar.configure(maximum=total)
         progress_var.set(done)
+
+
 def set_status(text, color="gray"):
     status_var.set(text)
     status_label.configure(fg=color)
+
+
 def begin_manual_backup_ui():
     set_status("Copying…", "blue")
     progress_bar.configure(maximum=100)
     progress_var.set(0)
     backup_now_btn.configure(state=tk.DISABLED)
+
+
 def finish_backup_ui(stats, err, scheduled=False):
     backup_now_btn.configure(state=tk.NORMAL)
     if err:
@@ -215,6 +174,12 @@ def finish_backup_ui(stats, err, scheduled=False):
         progress_var.set(0)
         set_status(f"Failed: {err}", "red")
         messagebox.showerror("Backup", f"Backup failed:\n{err}")
+        return
+    if stats.get("cancelled"):
+        set_status(
+            f"Stopped — {stats['copied']} copied, {stats['unchanged']} unchanged before cancel.",
+            "darkorange",
+        )
         return
     if stats["total"] <= 0:
         apply_progress(1, 1)
@@ -233,6 +198,8 @@ def finish_backup_ui(stats, err, scheduled=False):
         set_status(msg, "darkred")
         title = "Scheduled backup" if scheduled else "Backup"
         messagebox.showwarning(title, msg)
+
+
 def on_start():
     src = src_entry.get()
     dst = dst_entry.get()
@@ -254,9 +221,13 @@ def on_start():
         print(f"Error: Invalid time format. Use 24-hour HH:MM: {time_str}")
         return
     print(f"Starting backup process: src={src}, dst={dst}, interval={interval}, time_str={time_str}")
+    stop_event.clear()
+    cancel_event.clear()
     set_status("Scheduler running — waiting for next run time…", "blue")
     save_gui_state()
     threading.Thread(target=start_backup, args=(src, dst, interval, time_str), daemon=True).start()
+
+
 def on_backup_now():
     src = src_entry.get().strip()
     dst = dst_entry.get().strip()
@@ -267,21 +238,37 @@ def on_backup_now():
         messagebox.showerror("Error", "Source folder does not exist or is not a folder")
         return
     save_gui_state()
+    cancel_event.clear()
+
     def progress_cb(done, total):
         root.after(0, lambda d=done, t=total: apply_progress(d, t))
+
     def work():
         try:
             with copy_lock:
-                stats = copy_folder(src, dst, progress_cb=progress_cb)
+                stats = copy_folder(src, dst, progress_cb=progress_cb, cancel_event=cancel_event)
             root.after(0, lambda s=stats: finish_backup_ui(s, None, scheduled=False))
         except Exception as e:
             root.after(0, lambda err=str(e): finish_backup_ui(None, err, scheduled=False))
+
     def prepare_and_run():
         begin_manual_backup_ui()
         threading.Thread(target=work, daemon=True).start()
+
     root.after(0, prepare_and_run)
+
+
+def on_stop():
+    """Cancel any in-progress copy and stop the scheduler loop."""
+    cancel_event.set()
+    stop_event.set()
+    set_status("Stopping…", "darkorange")
+    print("Stop requested")
+
+
 backup_now_btn.configure(command=on_backup_now)
 start_backup_btn.configure(command=on_start)
+stop_btn.configure(command=on_stop)
 # Bring window forward (often hidden behind the IDE when launched from a terminal)
 root.update_idletasks()
 root.lift()
@@ -290,6 +277,8 @@ root.after(200, lambda: root.attributes("-topmost", False))
 
 
 def on_closing():
+    stop_event.set()
+    cancel_event.set()
     save_gui_state()
     root.destroy()
 

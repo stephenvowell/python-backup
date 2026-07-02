@@ -2,3 +2,17 @@
 /joes program.png
 /logs
 gui_state.json
+
+# Windows system files
+desktop.ini
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# PyInstaller build output
+/build/
+/dist/
+*.spec
