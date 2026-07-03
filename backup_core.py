@@ -12,8 +12,21 @@ import filecmp
 import os
 import re
 import shutil
+import sys
 
-LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+
+def app_dir():
+    """Directory for app data (logs, saved state).
+
+    When frozen by PyInstaller, ``__file__`` lives in a temp extraction folder,
+    so use the executable's own directory instead; otherwise use the source dir.
+    """
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.abspath(__file__))
+
+
+LOG_DIR = os.path.join(app_dir(), "logs")
 SUCCESS_LOG = os.path.join(LOG_DIR, "copy_success.csv")
 ERROR_LOG = os.path.join(LOG_DIR, "copy_errors.csv")
 

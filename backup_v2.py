@@ -7,7 +7,7 @@ from tkinter import filedialog, messagebox, ttk
 
 import schedule
 
-from backup_core import copy_folder, validate_time_format, log_error, LOG_DIR
+from backup_core import copy_folder, validate_time_format, log_error, LOG_DIR, app_dir
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -17,7 +17,7 @@ cancel_event = threading.Event()
 # Signals the scheduler loop to exit.
 stop_event = threading.Event()
 
-_STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gui_state.json")
+_STATE_FILE = os.path.join(app_dir(), "gui_state.json")
 
 
 def start_backup(src, dst, interval, time_str):
