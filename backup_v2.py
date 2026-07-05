@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import json
 import threading
@@ -355,8 +356,66 @@ def browse_folder(entry):
     save_gui_state()
 
 
-load_gui_state()
-ui_log("Ready. Choose folders and click Backup Now, or Start Backup for a schedule.\n", "sys")
+def _load_marketing_demo() -> None:
+    """Populate the UI with a polished success-state demo for product screenshots."""
+    for entry in (src_entry, dst_entry, interval_entry, time_entry):
+        entry.delete(0, tk.END)
+    src_entry.insert(0, "C:/Users/You/Documents/Projects")
+    dst_entry.insert(0, "D:/Backups/Projects")
+    interval_entry.insert(0, "1")
+    time_entry.insert(0, "09:00")
+
+    console.configure(state=tk.NORMAL)
+    console.delete("1.0", tk.END)
+    console.configure(state=tk.DISABLED)
+
+    ui_log("Backup Now started…\n", "sys")
+    ui_log("  copied: budget-2026.xlsx\n", "ok")
+    ui_log("  copied: client-notes.docx\n", "ok")
+    ui_log("  copied: photos\\launch\\hero.png\n", "ok")
+    ui_log("  skip (unchanged): readme.md\n", "skip")
+    ui_log("  skip (unchanged): config.json\n", "skip")
+    ui_log("Done — 12 copied, 3 already up to date (15 files).\n", "ok")
+
+    apply_progress(15, 15)
+    progress_var.set(15)
+    set_status("Success — 12 copied, 3 already up to date (15 files).", OK)
+
+
+def _capture_marketing_shot() -> None:
+    from pathlib import Path
+
+    try:
+        from PIL import ImageGrab
+        import win32gui
+    except ImportError as exc:
+        messagebox.showerror("Screenshot", f"Missing dependency: {exc}")
+        root.destroy()
+        return
+
+    root.update_idletasks()
+    title = f"Python BackUp v{__version__}"
+    hwnd = win32gui.FindWindow(None, title)
+    if hwnd:
+        bbox = win32gui.GetWindowRect(hwnd)
+    else:
+        x, y = root.winfo_rootx(), root.winfo_rooty()
+        bbox = (x, y, x + root.winfo_width(), y + root.winfo_height())
+
+    out_dir = Path(__file__).resolve().parent / "docs"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out = out_dir / "screenshot.png"
+    ImageGrab.grab(bbox=bbox).save(out)
+    root.destroy()
+
+
+if "--marketing-shot" in sys.argv:
+    root.geometry("720x680")
+    root.after(500, _load_marketing_demo)
+    root.after(1200, _capture_marketing_shot)
+else:
+    load_gui_state()
+    ui_log("Ready. Choose folders and click Backup Now, or Start Backup for a schedule.\n", "sys")
 
 
 def apply_progress(done, total):
