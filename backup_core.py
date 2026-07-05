@@ -68,11 +68,12 @@ def validate_time_format(time_str):
     return _TIME_RE.match(time_str or "") is not None
 
 
-def copy_folder(src, dst, progress_cb=None, cancel_event=None):
+def copy_folder(src, dst, progress_cb=None, log_cb=None, cancel_event=None):
     """Copy the tree at ``src`` into ``dst``, skipping files already identical.
 
-    ``progress_cb(done, total)`` is called after each file. If ``cancel_event``
-    is provided and set, the copy stops early and ``cancelled`` is returned True.
+    ``progress_cb(done, total)`` is called after each file.
+    ``log_cb(message, tag)`` is optional; tag may be ``sys``, ``ok``, ``err``, or ``skip``.
+    If ``cancel_event`` is provided and set, the copy stops early and ``cancelled`` is returned True.
     """
     if not os.path.exists(dst):
         os.makedirs(dst)
@@ -85,6 +86,12 @@ def copy_folder(src, dst, progress_cb=None, cancel_event=None):
         if progress_cb:
             progress_cb(done, total)
 
+    def log(message, tag=None):
+        if log_cb:
+            log_cb(message, tag)
+
+    log(f"Scanning {total} file(s) in {src}\n", "sys")
+
     for dirpath, _dirs, files in os.walk(src):
         if cancel_event is not None and cancel_event.is_set():
             cancelled = True
@@ -94,6 +101,7 @@ def copy_folder(src, dst, progress_cb=None, cancel_event=None):
                 cancelled = True
                 break
             src_file = os.path.join(dirpath, file)
+            rel = os.path.relpath(src_file, src)
             dst_file = os.path.join(dst, os.path.relpath(src_file, src))
             try:
                 os.makedirs(os.path.dirname(dst_file), exist_ok=True)
@@ -101,15 +109,28 @@ def copy_folder(src, dst, progress_cb=None, cancel_event=None):
                     shutil.copy2(src_file, dst_file)
                     log_success(f"Copied {src_file} to {dst_file}")
                     copied += 1
+                    log(f"  + {rel}\n", "ok")
                 else:
                     unchanged += 1
+                    log(f"  · {rel} (unchanged)\n", "skip")
             except Exception as e:  # noqa: BLE001 - log and continue on any file error
                 errors += 1
                 log_error(f"Failed to copy {src_file} to {dst_file}: {e}")
+                log(f"  ! {rel}: {e}\n", "err")
             done += 1
             report()
         if cancelled:
             break
+
+    if cancelled:
+        log(f"Cancelled after {done}/{total} file(s).\n", "sys")
+    elif total == 0:
+        log("No files to copy.\n", "sys")
+    else:
+        log(
+            f"Done — {copied} copied, {unchanged} unchanged, {errors} error(s).\n",
+            "sys",
+        )
 
     if total == 0 and progress_cb:
         progress_cb(0, 0)

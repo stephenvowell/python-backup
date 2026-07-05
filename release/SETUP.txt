@@ -1,0 +1,39 @@
+Python BackUp v1.0.0 — Windows setup
+=====================================
+
+Requirements
+------------
+- Windows 10 or 11 (64-bit)
+- No Python install required
+
+Install
+-------
+1. Unzip PythonBackUp-windows.zip to any folder (e.g. Desktop\PythonBackUp).
+2. Double-click PythonBackUp.exe.
+
+If Windows SmartScreen shows "Windows protected your PC":
+  Click "More info", then "Run anyway".
+  The app is not code-signed yet; this warning is normal for independent software.
+
+First run
+---------
+1. Click Browse (or type paths) for Source and Destination folders.
+2. Click "Backup Now" for an immediate one-off copy, OR
+3. Enter Interval (days) and Time (24-hour HH:MM, e.g. 09:00), then "Start Backup".
+
+Tips
+----
+- Files that already match the destination are skipped (incremental backup).
+- Press Stop to cancel a running copy or halt the scheduler.
+- Logs are written to a logs\ folder next to PythonBackUp.exe.
+- Your last paths and schedule fields are saved in gui_state.json next to the exe.
+
+Support
+-------
+Questions or issues: vowellstephen@gmail.com
+Project: https://github.com/stephenvowell/python-backup
+
+License
+-------
+See LICENSE.txt (MIT). Purchased builds include a personal/commercial use license
+for the standalone app; source code remains open on GitHub.

@@ -1,6 +1,21 @@
 # Python BackUp
 
-Python BackUp is a small backup utility with a Tkinter GUI. You can run a **one-off backup** or **schedule** recurring copies of a folder to a destination. Results are logged to CSV files under `logs/`.
+[![CI](https://github.com/stephenvowell/python-backup/actions/workflows/ci.yml/badge.svg)](https://github.com/stephenvowell/python-backup/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
+
+Python BackUp is a small backup utility with a Tkinter GUI. Run a **one-off backup**
+or **schedule** recurring copies of a folder to a destination. Results are logged to
+CSV files under `logs/`.
+
+## Download (Windows)
+
+No Python required — grab the latest standalone build:
+
+**[Download PythonBackUp-windows.zip](https://github.com/stephenvowell/python-backup/releases/latest)**
+
+Unzip and follow `SETUP.txt`. Licensed builds also available via
+[stephenv.net](https://stephenv.net/#apps).
 
 ## Features
 
@@ -11,32 +26,18 @@ Python BackUp is a small backup utility with a Tkinter GUI. You can run a **one-
 - **Incremental copies**: Files that already match the destination are skipped.
 - **CSV logs** (appended across runs): `logs/copy_success.csv` and `logs/copy_errors.csv`. Paths are properly quoted, so commas in file paths never corrupt the columns.
 
-## Requirements
+## Requirements (from source)
 
-- Python 3.x
+- Python 3.9+
 - Tkinter (usually included with Windows/macOS Python from [python.org](https://www.python.org/))
 - [`schedule`](https://pypi.org/project/schedule/)
 
-## Installation
-
-1. Clone the repository:
-
-   ```sh
-   git clone https://github.com/stephenvowell/PythonBackUp.git
-   cd PythonBackUp
-   ```
-
-2. Install dependencies:
-
-   ```sh
-   pip install -r requirements.txt
-   ```
-
-## Usage
-
-From the project directory:
+## Installation (from source)
 
 ```sh
+git clone https://github.com/stephenvowell/python-backup.git
+cd python-backup
+pip install -r requirements.txt
 python backup_v2.py
 ```
 
@@ -47,20 +48,14 @@ python backup_v2.py
 3. For scheduling, fill **Interval (days)** and **Time (24-hour HH:MM)**, then **Start Backup**. The scheduled job runs at that clock time; use **Backup Now** if you also need an immediate copy.
 4. Press **Stop** to cancel a running copy or halt the scheduler.
 
-On Windows PowerShell 5.x, chain commands with `;` instead of `&&`, for example:
-
-```powershell
-Set-Location C:\path\to\PythonBackUp; python backup_v2.py
-```
-
 ## Project layout
 
 - `backup_v2.py` — the Tkinter GUI application.
 - `backup_core.py` — GUI-free copy/validation/logging logic (imported by the GUI and covered by tests).
+- `version.py` — release version string.
+- `release/` — customer-facing `SETUP.txt` and `README.txt` bundled into the Windows zip.
 
 ## Build a standalone Windows executable
-
-Produce a single-file `.exe` that runs without a Python install:
 
 ```powershell
 pip install -r requirements-dev.txt
@@ -68,6 +63,14 @@ pip install -r requirements-dev.txt
 ```
 
 The executable is written to `dist\PythonBackUp.exe`.
+
+### Release zip (exe + SETUP.txt + README.txt)
+
+```powershell
+.\scripts\build-release.ps1
+```
+
+Produces `dist\PythonBackUp-windows.zip` ready for GitHub Releases or Gumroad.
 
 ## Running tests
 
@@ -83,3 +86,5 @@ Contributions are welcome. Fork the repository and open a pull request.
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+© Stephen Vowell · [stephenv.net](https://stephenv.net)

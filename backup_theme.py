@@ -1,0 +1,18 @@
+"""Shared Tkinter palette (stephenv.net dark navy + blue)."""
+
+BG = "#0d1528"
+PANEL = "#122040"
+PANEL2 = "#1a2d5c"
+CONSOLE_BG = "#080e1c"
+ACCENT = "#3b82f6"
+ACCENT_H = "#2563eb"
+ACCENT_L = "#93c5fd"
+TEXT = "#f8fafc"
+MUTED = "#94a3b8"
+DANGER = "#f87171"
+DANGER_H = "#dc2626"
+OK = "#4ade80"
+WARN = "#fb923c"
+
+FONT = "Segoe UI"
+MONO = "Consolas"
