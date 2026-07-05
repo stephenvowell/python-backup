@@ -20,4 +20,9 @@ Quick start
 
 Full setup steps: see SETUP.txt
 
+Download
+--------
+- Free: https://github.com/stephenvowell/python-backup/releases/latest
+- Support development: https://vowellstephen.gumroad.com/l/tbmyl (same zip)
+
 Built by Stephen Vowell — https://stephenv.net

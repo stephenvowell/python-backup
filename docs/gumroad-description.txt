@@ -1,0 +1,27 @@
+SUMMARY (Gumroad "Summary" field — one line)
+Scheduled folder backup for Windows — incremental copies, CSV logs, no cloud account.
+
+DESCRIPTION (Gumroad rich-text description)
+Python BackUp is a standalone Windows desktop app for backing up any folder to a destination you choose — on demand or on a schedule.
+
+What you get
+• Backup Now — one-off copy with source and destination only
+• Schedule backups — interval (days) + 24-hour clock time (e.g. 09:00)
+• Incremental copies — unchanged files are skipped on repeat runs
+• Live progress bar, log console, and CSV logs under logs/
+• No cloud account, no subscription — runs locally on your PC
+
+Quick start
+1. Download PythonBackUp-windows.zip
+2. Unzip to any folder
+3. Double-click PythonBackUp.exe
+4. Open SETUP.txt in the zip for full instructions
+
+Windows SmartScreen may warn that the app is unsigned — click More info, then Run anyway. Normal for independent software.
+
+Same build on GitHub (free, MIT). Buying here supports ongoing development — you receive the same zip.
+
+Links
+GitHub download: https://github.com/stephenvowell/python-backup/releases/latest
+Project page: https://stephenv.net/#apps
+Support: vowellstephen@gmail.com

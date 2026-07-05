@@ -35,5 +35,5 @@ Project: https://github.com/stephenvowell/python-backup
 
 License
 -------
-See LICENSE.txt (MIT). Purchased builds include a personal/commercial use license
-for the standalone app; source code remains open on GitHub.
+MIT — source on GitHub. The GitHub release zip is identical to the Gumroad build.
+Buying on Gumroad supports ongoing development; see LICENSE.txt in this folder.

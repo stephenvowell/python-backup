@@ -8,14 +8,17 @@ Python BackUp is a small backup utility with a Tkinter GUI. Run a **one-off back
 or **schedule** recurring copies of a folder to a destination. Results are logged to
 CSV files under `logs/`.
 
+![Python BackUp desktop app](docs/screenshot.png)
+
 ## Download (Windows)
 
 No Python required — grab the latest standalone build:
 
-**[Download PythonBackUp-windows.zip](https://github.com/stephenvowell/python-backup/releases/latest)**
+**[Download PythonBackUp-windows.zip](https://github.com/stephenvowell/python-backup/releases/latest)** (free, MIT)
 
-Unzip and follow `SETUP.txt`. Licensed builds also available on
-[Gumroad](https://vowellstephen.gumroad.com/l/tbmyl) · [stephenv.net](https://stephenv.net/#apps).
+Unzip and follow `SETUP.txt`. Prefer to support ongoing development?
+**[Buy on Gumroad](https://vowellstephen.gumroad.com/l/tbmyl)** — same zip, same app.
+Also listed on [stephenv.net](https://stephenv.net/#apps).
 
 ## Features
 
