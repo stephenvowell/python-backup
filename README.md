@@ -14,8 +14,8 @@ No Python required — grab the latest standalone build:
 
 **[Download PythonBackUp-windows.zip](https://github.com/stephenvowell/python-backup/releases/latest)**
 
-Unzip and follow `SETUP.txt`. Licensed builds also available via
-[stephenv.net](https://stephenv.net/#apps).
+Unzip and follow `SETUP.txt`. Licensed builds also available on
+[Gumroad](https://vowellstephen.gumroad.com/l/tbmyl) · [stephenv.net](https://stephenv.net/#apps).
 
 ## Features
 
