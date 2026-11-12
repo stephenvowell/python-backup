@@ -4,9 +4,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
 
-Python BackUp is a small backup utility with a Tkinter GUI. Run a **one-off backup**
-or **schedule** recurring copies of a folder to a destination. Results are logged to
-CSV files under `logs/`.
+Python BackUp is a small backup utility with a Tkinter GUI. Run a **one-off backup**,
+**restore** a folder from a backup, or **schedule** recurring copies of a folder to a
+destination. Results are logged to CSV files under `logs/`.
 
 ![Python BackUp desktop app](docs/screenshot.png)
 
@@ -24,6 +24,7 @@ Also listed on [stephenv.net](https://stephenv.net/#apps).
 
 - **Browse folders**: Pick source and destination directories.
 - **Backup Now**: Copy immediately using only source and destination (no schedule required).
+- **Restore**: Copy the backup (destination) back to the original (source) folder. Files that differ are overwritten with the backup copy — the app asks for confirmation first.
 - **Schedule backups**: Set interval (days) and **24-hour** time `HH:MM` (e.g. `09:00`, `14:30`), then **Start Backup** to run on that schedule.
 - **Stop**: Cancel an in-progress copy and stop the scheduler at any time.
 - **Incremental copies**: Files that already match the destination are skipped.
@@ -48,13 +49,14 @@ python backup_v2.py
 
 1. Choose **Source** and **Destination** folders (Browse or type paths).
 2. Optional — **Backup Now** to copy once right away.
-3. For scheduling, fill **Interval (days)** and **Time (24-hour HH:MM)**, then **Start Backup**. The scheduled job runs at that clock time; use **Backup Now** if you also need an immediate copy.
-4. Press **Stop** to cancel a running copy or halt the scheduler.
+3. To restore, press **Restore** — it copies the Destination (backup) back to the Source folder, after a confirmation. Useful when files were lost or changed and you want the backed-up versions back.
+4. For scheduling, fill **Interval (days)** and **Time (24-hour HH:MM)**, then **Start Backup**. The scheduled job runs at that clock time; use **Backup Now** if you also need an immediate copy.
+5. Press **Stop** to cancel a running copy or halt the scheduler.
 
 ## Project layout
 
 - `backup_v2.py` — the Tkinter GUI application.
-- `backup_core.py` — GUI-free copy/validation/logging logic (imported by the GUI and covered by tests).
+- `backup_core.py` — GUI-free copy/validation/logging logic (imported by the GUI and covered by tests). Includes `copy_folder` (backup) and `restore_folder` (restore).
 - `version.py` — release version string.
 - `release/` — customer-facing `SETUP.txt` and `README.txt` bundled into the Windows zip.
 

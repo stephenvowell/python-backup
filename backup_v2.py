@@ -8,7 +8,7 @@ from tkinter import filedialog, messagebox, ttk
 
 import schedule
 
-from backup_core import copy_folder, validate_time_format, log_error, LOG_DIR, app_dir
+from backup_core import copy_folder, restore_folder, validate_time_format, log_error, LOG_DIR, app_dir
 from version import __version__
 from backup_theme import (
     ACCENT,
@@ -26,6 +26,7 @@ from backup_theme import (
     PANEL2,
     TEXT,
     WARN,
+    WARN_H,
 )
 
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -172,9 +173,11 @@ status_label.grid(row=6, column=0, columnspan=3, padx=22, pady=(0, 8), sticky="e
 btn_row = tk.Frame(form, bg=BG)
 btn_row.grid(row=7, column=0, columnspan=3, pady=(4, 4))
 backup_now_btn = _btn(btn_row, "Backup Now", None)
+restore_btn = _btn(btn_row, "Restore", None, base=WARN, hover=WARN_H)
 start_backup_btn = _btn(btn_row, "Start Backup", None)
 stop_btn = _btn(btn_row, "Stop", None, base=DANGER, hover=DANGER_H)
 backup_now_btn.pack(side=tk.LEFT, padx=(0, 8))
+restore_btn.pack(side=tk.LEFT, padx=(0, 8))
 start_backup_btn.pack(side=tk.LEFT, padx=(0, 8))
 stop_btn.pack(side=tk.LEFT, padx=(0, 8))
 clear_log_btn = _btn(btn_row, "Clear log", None, secondary=True)
@@ -463,14 +466,25 @@ def begin_manual_backup_ui():
     ui_log("Backup Now started…\n", "sys")
 
 
-def finish_backup_ui(stats, err, scheduled=False):
+def begin_manual_restore_ui():
+    clear_log()
+    _last_progress["done"] = -1
+    set_status("Restoring…", ACCENT_L)
+    progress_bar.configure(maximum=100)
+    progress_var.set(0)
+    _set_btn_enabled(restore_btn, False)
+    ui_log("Restore started…\n", "sys")
+
+
+def finish_backup_ui(stats, err, scheduled=False, label="Backup"):
     _set_btn_enabled(backup_now_btn, True)
+    _set_btn_enabled(restore_btn, True)
     if err:
         apply_progress(0, 1)
         progress_var.set(0)
         set_status(f"Failed: {err}", DANGER)
         ui_log(f"Failed: {err}\n", "err")
-        messagebox.showerror("Backup", f"Backup failed:\n{err}")
+        messagebox.showerror(label, f"{label} failed:\n{err}")
         return
     if stats.get("cancelled"):
         set_status(
@@ -493,7 +507,7 @@ def finish_backup_ui(stats, err, scheduled=False):
             f"{stats['copied']} copied, {stats['unchanged']} unchanged. See logs."
         )
         set_status(msg, DANGER)
-        title = "Scheduled backup" if scheduled else "Backup"
+        title = "Scheduled backup" if scheduled else label
         messagebox.showwarning(title, msg)
 
 
@@ -572,6 +586,50 @@ def on_backup_now():
     root.after(0, prepare_and_run)
 
 
+def on_restore():
+    """Copy the backup (Destination) back to the original (Source) folder."""
+    src = src_entry.get().strip()
+    dst = dst_entry.get().strip()
+    if not src or not dst:
+        messagebox.showerror("Error", "Source and destination folders are required")
+        return
+    if not os.path.isdir(dst):
+        messagebox.showerror("Error", "Destination folder does not exist or is not a folder")
+        return
+    if not messagebox.askyesno(
+        "Restore",
+        "Restore will copy files from the Destination (backup) back to the\n"
+        "Source folder, overwriting any files there that differ from the backup.\n\n"
+        f"From: {dst}\nTo: {src}\n\nContinue?",
+    ):
+        return
+    save_gui_state()
+    cancel_event.clear()
+
+    def progress_cb(done, total):
+        throttled_progress(done, total)
+
+    def work():
+        try:
+            with copy_lock:
+                stats = restore_folder(
+                    dst,
+                    src,
+                    progress_cb=progress_cb,
+                    log_cb=log_cb,
+                    cancel_event=cancel_event,
+                )
+            root.after(0, lambda s=stats: finish_backup_ui(s, None, scheduled=False, label="Restore"))
+        except Exception as e:
+            root.after(0, lambda err=str(e): finish_backup_ui(None, err, scheduled=False, label="Restore"))
+
+    def prepare_and_run():
+        begin_manual_restore_ui()
+        threading.Thread(target=work, daemon=True).start()
+
+    root.after(0, prepare_and_run)
+
+
 def on_clear_log():
     clear_log()
     ui_log("Log cleared.\n", "sys")
@@ -587,6 +645,7 @@ def on_stop():
 
 
 backup_now_btn.configure(command=on_backup_now)
+restore_btn.configure(command=on_restore)
 start_backup_btn.configure(command=on_start)
 stop_btn.configure(command=on_stop)
 clear_log_btn.configure(command=on_clear_log)
