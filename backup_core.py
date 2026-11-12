@@ -142,3 +142,24 @@ def copy_folder(src, dst, progress_cb=None, log_cb=None, cancel_event=None):
         "total": total,
         "cancelled": cancelled,
     }
+
+
+def restore_folder(backup_src, restore_dst, progress_cb=None, log_cb=None, cancel_event=None):
+    """Copy the tree at ``backup_src`` back into ``restore_dst``.
+
+    This is the reverse of :func:`copy_folder`: the backup folder becomes the
+    source and the original folder becomes the destination. Files that already
+    match the backup are skipped; files that differ are overwritten with the
+    backup copy, so restoring reverts those files to the backed-up state.
+    Same progress, logging, and cancellation behaviour as ``copy_folder``.
+    """
+    log_msg = f"Restoring {backup_src} to {restore_dst}"
+    if log_cb:
+        log_cb(log_msg + "\n", "sys")
+    return copy_folder(
+        backup_src,
+        restore_dst,
+        progress_cb=progress_cb,
+        log_cb=log_cb,
+        cancel_event=cancel_event,
+    )

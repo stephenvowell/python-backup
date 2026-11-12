@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-11-11
+
+### Added
+- **Restore** — a "Restore" button copies the backup (Destination) back to the
+  original (Source) folder, with a confirmation dialog first. Files that differ
+  are overwritten with the backup copy; unchanged files are skipped, same as backup.
+- `restore_folder()` in `backup_core.py` (the reverse of `copy_folder`).
+- pytest coverage for restore (files restored, unchanged skipped, missing folder recreated).
+
 ## [1.0.0] - 2026-07-04
 
 ### Added

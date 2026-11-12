@@ -87,6 +87,49 @@ class TestCopyFolder:
         assert stats["copied"] == 0
 
 
+class TestRestoreFolder:
+    def test_restores_files(self, tmp_path):
+        backup = tmp_path / "backup"
+        original = tmp_path / "original"
+        (backup / "sub").mkdir(parents=True)
+        (backup / "a.txt").write_text("backed up")
+        (backup / "sub" / "b.txt").write_text("also backed up")
+        # Original is missing one file and has a stale version of the other.
+        original.mkdir()
+        (original / "a.txt").write_text("stale")
+
+        stats = backup_core.restore_folder(str(backup), str(original))
+
+        assert stats["total"] == 2
+        assert stats["copied"] == 2
+        assert stats["errors"] == 0
+        assert (original / "a.txt").read_text() == "backed up"
+        assert (original / "sub" / "b.txt").read_text() == "also backed up"
+
+    def test_restore_skips_unchanged_on_second_run(self, tmp_path):
+        backup = tmp_path / "backup"
+        original = tmp_path / "original"
+        backup.mkdir()
+        (backup / "a.txt").write_text("hello")
+
+        backup_core.restore_folder(str(backup), str(original))
+        stats = backup_core.restore_folder(str(backup), str(original))
+
+        assert stats["copied"] == 0
+        assert stats["unchanged"] == 1
+
+    def test_restore_recreates_missing_folder(self, tmp_path):
+        backup = tmp_path / "backup"
+        original = tmp_path / "original"  # does not exist yet
+        backup.mkdir()
+        (backup / "a.txt").write_text("hello")
+
+        stats = backup_core.restore_folder(str(backup), str(original))
+
+        assert stats["copied"] == 1
+        assert (original / "a.txt").read_text() == "hello"
+
+
 class TestCsvLogging:
     def test_paths_with_commas_stay_quoted(self, tmp_path, monkeypatch):
         log = tmp_path / "copy_success.csv"

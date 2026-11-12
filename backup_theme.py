@@ -13,6 +13,7 @@ DANGER = "#f87171"
 DANGER_H = "#dc2626"
 OK = "#4ade80"
 WARN = "#fb923c"
+WARN_H = "#ea580c"
 
 FONT = "Segoe UI"
 MONO = "Consolas"
