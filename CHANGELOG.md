@@ -28,4 +28,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - pytest suite for core copy/validation logic.
 - GitHub Actions CI (tests + Windows build artifact).
 
+[1.1.0]: https://github.com/stephenvowell/python-backup/releases/tag/v1.1.0
 [1.0.0]: https://github.com/stephenvowell/python-backup/releases/tag/v1.0.0

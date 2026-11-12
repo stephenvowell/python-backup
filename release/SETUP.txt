@@ -1,4 +1,4 @@
-Python BackUp v1.0.0 — Windows setup
+Python BackUp v1.1.0 — Windows setup
 =====================================
 
 Requirements
@@ -20,6 +20,8 @@ First run
 1. Click Browse (or type paths) for Source and Destination folders.
 2. Click "Backup Now" for an immediate one-off copy, OR
 3. Enter Interval (days) and Time (24-hour HH:MM, e.g. 09:00), then "Start Backup".
+4. Use "Restore" to copy the Destination (backup) back to the Source folder
+   (confirmation required). Useful if files were lost or changed.
 
 Tips
 ----
