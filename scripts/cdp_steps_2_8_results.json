@@ -1,0 +1,44 @@
+[
+  {
+    "step": 2,
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Warning: 'print' is not in the list of known options, but still passed to Electron/Chromium."
+  },
+  {
+    "step": 3,
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Warning: 'print' is not in the list of known options, but still passed to Electron/Chromium."
+  },
+  {
+    "step": 4,
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Warning: 'print' is not in the list of known options, but still passed to Electron/Chromium."
+  },
+  {
+    "step": 5,
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Warning: 'print' is not in the list of known options, but still passed to Electron/Chromium."
+  },
+  {
+    "step": 6,
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Warning: 'print' is not in the list of known options, but still passed to Electron/Chromium."
+  },
+  {
+    "step": 7,
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Warning: 'print' is not in the list of known options, but still passed to Electron/Chromium."
+  },
+  {
+    "step": 8,
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Warning: 'print' is not in the list of known options, but still passed to Electron/Chromium."
+  }
+]

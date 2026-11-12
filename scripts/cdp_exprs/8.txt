@@ -1,0 +1,18 @@
+
+(async () => {
+  const b64 = window.__thumbB64;
+  const bin = atob(b64);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  const blob = new Blob([arr], { type: "image/jpeg" });
+  const inputs = [...document.querySelectorAll('input[type=file]')].filter(i => i.accept && i.accept.includes('jpeg'));
+  const input = inputs[inputs.length - 1] || document.querySelectorAll('input[type=file]')[2];
+  const file = new File([blob], "gumroad-thumbnail.jpg", { type: "image/jpeg" });
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  input.files = dt.files;
+  input.dispatchEvent(new Event("change", { bubbles: true }));
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  await new Promise(r => setTimeout(r, 500));
+  return { ok: true, files: input.files.length, inputIndex: [...document.querySelectorAll('input[type=file]')].indexOf(input) };
+})()

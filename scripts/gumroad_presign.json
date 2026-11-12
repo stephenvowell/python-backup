@@ -1,0 +1,21 @@
+{
+  "id": 110058890,
+  "key": "fggpyrfmax85dq3og3c4kgb7xnv3",
+  "filename": "PythonBackUp-windows.zip",
+  "content_type": "application/zip",
+  "metadata": {},
+  "byte_size": 17833123,
+  "checksum": "Ie1JmKZDLGjTMBV38L6Hmg==",
+  "created_at": "2026-07-05T07:13:42Z",
+  "service_name": "amazon",
+  "attachable_sgid": "eyJfcmFpbHMiOnsiZGF0YSI6ImdpZDovL2d1bXJvYWQvQWN0aXZlU3RvcmFnZTo6QmxvYi8xMTAwNTg4OTA_ZXhwaXJlc19pbiIsInB1ciI6ImF0dGFjaGFibGUifX0=--e38f8af97f2274004db6d10eaffde68e9f2271be",
+  "signed_id": "eyJfcmFpbHMiOnsiZGF0YSI6MTEwMDU4ODkwLCJwdXIiOiJibG9iX2lkIn19--b3bde7b995b5ddda2f87e695fa50fe8ebef341f7",
+  "direct_upload": {
+    "url": "https://gumroad-public-storage.s3.amazonaws.com/fggpyrfmax85dq3og3c4kgb7xnv3?x-amz-acl=public-read&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIFX4MRO3Q3CSRVWQ%2F20260705%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260705T071342Z&X-Amz-Expires=300&X-Amz-SignedHeaders=content-length%3Bcontent-md5%3Bcontent-type%3Bhost&X-Amz-Signature=540ca5efb16258d0b76542ed56fe48ccc378c42a412d38eefe02d4fe40d26dc9",
+    "headers": {
+      "Content-Type": "application/zip",
+      "Content-MD5": "Ie1JmKZDLGjTMBV38L6Hmg==",
+      "Content-Disposition": "inline; filename=\"PythonBackUp-windows.zip\"; filename*=UTF-8''PythonBackUp-windows.zip"
+    }
+  }
+}
